@@ -51,6 +51,7 @@ ton_mini_app/
    pip install -r requirements.txt
    ```
 
+
 3. Configure the project:
    - Rename `.env_example` to `.env`.
    - Add your API keys and contract addresses to `.env`.

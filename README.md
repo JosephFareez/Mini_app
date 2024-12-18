@@ -50,7 +50,6 @@ ton_mini_app/
    ```bash
    pip install -r requirements.txt
    ```
-   
 
 3. Configure the project:
    - Rename `.env_example` to `.env`.

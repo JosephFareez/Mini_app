@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>TON Mini App</title>
+</head>
+<body>
+<div id="app">
+    <h1>TON Mini App</h1>
+    <button id="connect-wallet">Connect Wallet</button>
+    <div id="wallet-info"></div>
+
+    <h2>Tasks</h2>
+    <div id="tasks">
+        <p>Loading tasks...</p>
+    </div>
+    <button id="add-points">Add Points</button>
+
+    <h2>Airdrop</h2>
+    <button id="airdrop">Airdrop Tokens</button>
+    <div id="airdrop-status"></div>
+</div>
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+</body>
+</html>

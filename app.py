@@ -1,51 +1,75 @@
-from flask import Flask, render_template, jsonify, request
-from database import get_user_points, add_user_points
-from ton_integration import send_ton, get_wallet_balance
+from flask import Flask, render_template, request, redirect, url_for, flash
 
-app = Flask(__name__, static_folder="static", static_url_path="/static")
+from database import get_user_points, add_user_points, verify_task
+from ton_integration import get_wallet_balance, send_ton, mint_token
 
+app = Flask(__name__)
+app.secret_key = "supersecretkey"  # Для flash-сообщений
+
+
+# Главная страница
 @app.route("/")
 def index():
-    return render_template("index.html")
+    wallet_address = "ton://test_wallet_address"  # Мок-адрес кошелька
+    balance = get_wallet_balance(wallet_address)
+    points = get_user_points("12345")  # Пример ID пользователя
+    return render_template("index.html", wallet_address=wallet_address, balance=balance, points=points)
 
-@app.route("/connect-wallet")
-def connect_wallet():
-    try:
-        wallet_address = "ton://test_wallet_address"
-        balance = get_wallet_balance(wallet_address)
-        return jsonify({"address": wallet_address, "balance": balance})
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
 
-@app.route("/tasks")
-def tasks():
-    user_id = request.args.get("user_id", 0)
-    points = get_user_points(user_id)
-    return jsonify({"points": points, "tasks": [
-        {"description": "Subscribe to the Telegram channel", "status": "Completed"},
-        {"description": "Follow on Twitter", "status": "Pending"}
-    ]})
-
+# Добавление баллов
 @app.route("/add-points", methods=["POST"])
 def add_points():
-    user_id = request.json.get("user_id")
-    points = request.json.get("points", 0)
-    print(f"Adding {points} points to user {user_id}")  # Log for debugging
-    new_total = add_user_points(user_id, points)
-    return jsonify({"new_balance": new_total})
+    user_id = request.form.get("user_id")
+    points = int(request.form.get("points", 0))
+    new_balance = add_user_points(user_id, points)
+    flash(f"Баллы успешно добавлены. Новый баланс: {new_balance}.", "success")
+    return redirect(url_for("index"))
 
+
+# Проверка выполнения заданий
+@app.route("/verify-task", methods=["POST"])
+def verify_task_route():
+    task_id = request.form.get("task_id")
+    user_id = request.form.get("user_id")
+    if verify_task(user_id, task_id):
+        flash("Задание выполнено! Баллы начислены.", "success")
+    else:
+        flash("Задание не выполнено.", "error")
+    return redirect(url_for("index"))
+
+
+# Airdrop токенов
 @app.route("/airdrop", methods=["POST"])
 def airdrop():
-    user_id = request.json.get("user_id")
-    conversion_rate = request.json.get("conversion_rate", 0.01)
-    wallet_address = request.json.get("wallet_address")
+    user_id = request.form.get("user_id")
+    conversion_rate = float(request.form.get("conversion_rate", 0.01))
+    wallet_address = request.form.get("wallet_address")
 
-    print(f"User {user_id} requesting airdrop of {conversion_rate} tokens to {wallet_address}")  # Log for debugging
     points = get_user_points(user_id)
     tokens = points * conversion_rate
     result = send_ton(wallet_address, tokens)
+    return render_template("result.html", message="Airdrop успешен", tokens=tokens, result=result)
 
-    return jsonify({"message": "Airdrop successful", "tokens": tokens, "result": result})
+
+@app.route("/tasks")
+def tasks():
+    task_list = [
+        {"description": "Подписка на Telegram-канал", "status": "Completed"},
+        {"description": "Подписка на Twitter", "status": "Pending"},
+        {"description": "Публикация сторис", "status": "Pending"},
+    ]
+    return render_template("tasks.html", tasks=task_list)
+
+
+@app.route("/mint-token", methods=["POST"])
+def mint_token_route():
+    user_id = request.form.get("user_id")
+    metadata_url = request.form.get("metadata_url")
+    wallet_address = request.form.get("wallet_address")
+
+    result = mint_token(wallet_address, metadata_url)
+    flash("NFT успешно создан!", "success")
+    return redirect(url_for("index"))
 
 
 if __name__ == "__main__":

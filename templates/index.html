@@ -1,27 +1,36 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>TON Mini App</title>
+    <meta charset="UTF-8">
+    <title>TON MiniApp</title>
 </head>
 <body>
-<div id="app">
-    <h1>TON Mini App</h1>
-    <button id="connect-wallet">Connect Wallet</button>
-    <div id="wallet-info"></div>
+<h1>Добро пожаловать в TON MiniApp</h1>
+<p>Ваш кошелек: {{ wallet_address }}</p>
+<p>Баланс: {{ balance }} TON</p>
+<p>Ваши баллы: {{ points }}</p>
 
-    <h2>Tasks</h2>
-    <div id="tasks">
-        <p>Loading tasks...</p>
-    </div>
-    <button id="add-points">Add Points</button>
+<form action="/add-points" method="post">
+    <input type="hidden" name="user_id" value="12345">
+    <input type="number" name="points" placeholder="Баллы" required>
+    <button type="submit">Добавить баллы</button>
+</form>
 
-    <h2>Airdrop</h2>
-    <button id="airdrop">Airdrop Tokens</button>
-    <div id="airdrop-status"></div>
-</div>
-<script src="{{ url_for('static', filename='app.js') }}"></script>
-
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<form action="/airdrop" method="post">
+    <input type="hidden" name="user_id" value="12345">
+    <input type="number" step="0.01" name="conversion_rate" placeholder="Курс конверсии" required>
+    <input type="text" name="wallet_address" placeholder="Адрес кошелька" required>
+    <button type="submit">Airdrop</button>
+</form>
+<h2>Mint NFT</h2>
+<form action="/mint-token" method="post">
+    <input type="hidden" name="user_id" value="12345">
+    <label for="wallet_address">TON-адрес:</label>
+    <input type="text" name="wallet_address" required>
+    <label for="metadata_url">Metadata URL:</label>
+    <input type="text" name="metadata_url" required>
+    <button type="submit">Mint</button>
+</form>
 
 </body>
 </html>

@@ -1,38 +1,16 @@
-import sqlite3
-
-DB_FILE = "ton_mini_app.db"
-
-
-def init_db():
-    conn = sqlite3.connect(DB_FILE)
-    cursor = conn.cursor()
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS users (
-            user_id INTEGER PRIMARY KEY,
-            points INTEGER DEFAULT 0
-        )
-    """)
-    conn.commit()
-    conn.close()
-def add_user_points(user_id, points):
-    conn = sqlite3.connect(DB_FILE)
-    cursor = conn.cursor()
-    cursor.execute("INSERT OR IGNORE INTO users (user_id) VALUES (?)", (user_id,))
-    cursor.execute("UPDATE users SET points = points + ? WHERE user_id = ?", (points, user_id))
-    conn.commit()
-    conn.close()
-    return get_user_points(user_id)
-
+users = {}  # Пример базы данных в памяти
+tasks = {"123": {"description": "Подписка на канал", "completed": False}}
 
 def get_user_points(user_id):
-    conn = sqlite3.connect(DB_FILE)
-    cursor = conn.cursor()
-    cursor.execute("SELECT points FROM users WHERE user_id = ?", (user_id,))
-    row = cursor.fetchone()
-    conn.close()
-    return row[0] if row else 0
+    return users.get(user_id, 0)
 
+def add_user_points(user_id, points):
+    users[user_id] = users.get(user_id, 0) + points
+    return users[user_id]
 
-
-if __name__ == "__main__":
-    init_db()
+def verify_task(user_id, task_id):
+    if tasks.get(task_id) and not tasks[task_id]["completed"]:
+        tasks[task_id]["completed"] = True
+        add_user_points(user_id, 10)  # Пример награды
+        return True
+    return False

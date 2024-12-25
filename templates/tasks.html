@@ -1,23 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Tasks</title>
-</head>
-<body>
-    <h1>Задания</h1>
-    <ul>
-        {% for task in tasks %}
-        <li>
-            <strong>{{ task.description }}</strong> -
-            {% if task.status == "Completed" %}
-            <span style="color: green;">Выполнено</span>
-            {% else %}
-            <span style="color: red;">Не выполнено</span>
-            {% endif %}
-        </li>
-        {% endfor %}
-    </ul>
-    <a href="/">Назад</a>
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block content %}
+<section class="dashboard">
+    <h2>Your Tasks</h2>
+    <div class="tasks-list">
+        <ul>
+            <li>Task 1: Complete a subscription <button class="neon-button">Claim</button></li>
+            <li>Task 2: Post a story <button class="neon-button">Claim</button></li>
+            <li>Task 3: Refer a friend <button class="neon-button">Claim</button></li>
+        </ul>
+    </div>
+</section>
+{% endblock %}

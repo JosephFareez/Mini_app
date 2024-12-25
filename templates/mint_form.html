@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+    <header>
+        <h1>Mint NFT</h1>
+    </header>
+    <main>
+        <form action="/mint-token" method="post">
+            <div class="form-group">
+                <label for="wallet_address">TON Address:</label>
+                <input type="text" id="wallet_address" name="wallet_address" placeholder="Enter your TON address" required>
+            </div>
+            <div class="form-group">
+                <label for="metadata_url">Metadata URL:</label>
+                <input type="text" id="metadata_url" name="metadata_url" placeholder="Enter metadata URL" required>
+            </div>
+            <button type="submit">Mint NFT</button>
+        </form>
+    </main>
+{% endblock %}

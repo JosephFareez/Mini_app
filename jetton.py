@@ -6,10 +6,10 @@ from config import TON_API_URL, NFT_CONTRACT_ADDRESS, TON_API_KEY
 from ton_integration import send_ton
 
 
-def mint_jetton(owner_address: str, metadata_url: str) -> Dict:
+def mint_jetton(owner_address: str, amount: float) -> Dict:
     response = send_ton(
-        wallet_address=owner_address,
-        amount=0  # Assuming no TON transfer is needed for minting
+        to_address=owner_address,
+        amount=0.0
     )
     return response
 

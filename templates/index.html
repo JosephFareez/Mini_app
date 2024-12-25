@@ -1,36 +1,29 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>TON MiniApp</title>
-</head>
-<body>
-<h1>Добро пожаловать в TON MiniApp</h1>
-<p>Ваш кошелек: {{ wallet_address }}</p>
-<p>Баланс: {{ balance }} TON</p>
-<p>Ваши баллы: {{ points }}</p>
+{% extends "base.html" %}
 
-<form action="/add-points" method="post">
-    <input type="hidden" name="user_id" value="12345">
-    <input type="number" name="points" placeholder="Баллы" required>
-    <button type="submit">Добавить баллы</button>
-</form>
-
-<form action="/airdrop" method="post">
-    <input type="hidden" name="user_id" value="12345">
-    <input type="number" step="0.01" name="conversion_rate" placeholder="Курс конверсии" required>
-    <input type="text" name="wallet_address" placeholder="Адрес кошелька" required>
-    <button type="submit">Airdrop</button>
-</form>
-<h2>Mint NFT</h2>
-<form action="/mint-token" method="post">
-    <input type="hidden" name="user_id" value="12345">
-    <label for="wallet_address">TON-адрес:</label>
-    <input type="text" name="wallet_address" required>
-    <label for="metadata_url">Metadata URL:</label>
-    <input type="text" name="metadata_url" required>
-    <button type="submit">Mint</button>
-</form>
-
-</body>
-</html>
+{% block content %}
+<section class="dashboard">
+    <h2>Welcome, User!</h2>
+    <div class="info-box">
+        <p>Your Wallet: <span class="highlight">{{ wallet_address }}</span></p>
+        <p>Balance: <span class="highlight">{{ balance }} TON</span></p>
+        <p>Points: <span class="highlight">{{ points }}</span></p>
+    </div>
+    <div class="actions">
+        <form action="/add-points" method="post" class="form">
+            <input type="number" name="points" placeholder="Points" required class="input">
+            <button type="submit" class="neon-button">Add Points</button>
+        </form>
+        <form action="/airdrop" method="post" class="form">
+            <input type="number" step="0.01" name="conversion_rate" placeholder="Conversion Rate" required class="input">
+            <input type="text" name="wallet_address" placeholder="Wallet Address" required class="input">
+            <button type="submit" class="neon-button">Airdrop</button>
+        </form>
+        <form action="/mint-token" method="post" class="form">
+            <input type="text" name="wallet_address" placeholder="Wallet Address" required class="input">
+            <input type="text" name="metadata_url" placeholder="Metadata URL" required class="input">
+            <button type="submit" class="neon-button">Mint NFT</button>
+        </form>
+        <a href="/tasks" class="neon-button">View Tasks</a>
+    </div>
+</section>
+{% endblock %}

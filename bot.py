@@ -1,55 +1,47 @@
-from typing import Optional
+from flask import Flask, jsonify, render_template, request
 
-from telethon import TelegramClient, events
+app = Flask(__name__)
 
-from config import API_ID, API_HASH, BOT_TOKEN
-from database import init_db, add_user
-from jetton import mint_jetton
-from nft import mint_nft
-from ton_integration import get_wallet_balance
-
-# Initialize the Telegram bot
-bot = TelegramClient("ton_bot", API_ID, API_HASH).start(bot_token=BOT_TOKEN)
+# Импорт функций для работы с TON
+from ton_integration import get_wallet_balance, mint_token
 
 
-# Command: /start
-@bot.on(events.NewMessage(pattern="/start"))
-async def start(event) -> None:
-    user_id: int = event.sender_id
-    username: str = event.sender.username or "Anonymous"
-    wallet_address: str = "ton://connect"  # Placeholder for wallet integration
-    add_user(user_id, username, wallet_address)
-    await event.respond(f"Welcome, {username}! Your TON wallet address: {wallet_address}")
+@app.route("/")
+def index():
+	wallet_address = "ton://test_wallet_address"  # Пример адреса
+	balance = get_wallet_balance(wallet_address)
+	points = 100  # Пример количества баллов
+	return render_template("index.html", wallet_address=wallet_address, balance=balance, points=points)
 
 
-# Command: /balance
-@bot.on(events.NewMessage(pattern="/balance"))
-async def balance(event) -> None:
-    wallet_address: str = "your_wallet_address"  # Fetch from the database
-    balance: Optional[float] = get_wallet_balance(wallet_address)
-    if balance is not None:
-        await event.respond(f"Your wallet balance: {balance} TON")
-    else:
-        await event.respond("Could not fetch wallet balance.")
+@app.route("/add-points", methods=["POST"])
+def add_points():
+	user_id = request.form.get("user_id")
+	points = request.form.get("points")
+	# Здесь можно обновить баллы пользователя в базе данных
+	return f"Баллы {points} добавлены для пользователя {user_id}!"
 
 
-# Command: /mint_jetton
-@bot.on(events.NewMessage(pattern="/mint_jetton"))
-async def mint_jetton_command(event) -> None:
-    amount: float = 100  # Example: mint 100 Jettons
-    result = mint_jetton("user_wallet_address", amount)
-    await event.respond(f"Jettons minted successfully: {result}")
+@app.route("/airdrop", methods=["POST"])
+def airdrop():
+	user_id = request.form.get("user_id")
+	conversion_rate = request.form.get("conversion_rate")
+	wallet_address = request.form.get("wallet_address")
+	# Здесь можно реализовать логику airdrop
+	return f"Airdrop отправлен на адрес {wallet_address} по курсу {conversion_rate}!"
 
 
-# Command: /mint_nft
-@bot.on(events.NewMessage(pattern="/mint_nft"))
-async def mint_nft_command(event) -> None:
-    metadata_url: str = "ipfs://your_metadata_hash"
-    result = mint_nft("user_wallet_address", metadata_url)
-    await event.respond(f"NFT created successfully: {result}")
+@app.route("/mint-token", methods=["POST"])
+def mint_nft():
+	wallet_address = request.form.get("wallet_address")
+	metadata_url = request.form.get("metadata_url")
+	try:
+		result = mint_token(wallet_address, metadata_url)
+		return jsonify(result)
+	except Exception as e:
+		return f"Ошибка при минтинге NFT: {e}", 500
 
 
-# Run the bot
-if __name__ == "__main__":
-    init_db()
-    bot.run_until_disconnected()
+@app.route("/tasks")
+def tasks():
+	return render_template("tasks.html")

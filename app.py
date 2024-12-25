@@ -1,5 +1,5 @@
 import requests
-from flask import Flask, flash, jsonify, redirect, render_template, request, url_for
+from flask import Flask, flash, jsonify, redirect, render_template, request, send_from_directory, url_for
 
 from config import TON_API_KEY, TON_API_URL
 from database import add_user_points, get_user_points, verify_task
@@ -8,6 +8,9 @@ from ton_integration import get_wallet_balance, mint_token, send_ton
 app = Flask(__name__)
 app.secret_key = "supersecretkey"  # Для flash-сообщений
 
+@app.route('/static/<path:filename>')
+def static_files(filename):
+    return send_from_directory('static', filename)
 
 # Главная страница
 @app.route("/")

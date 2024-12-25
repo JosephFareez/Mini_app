@@ -10,6 +10,11 @@ if not TON_API_URL:
 
 
 # Получение баланса кошелька
+import requests
+
+import requests
+
+
 def get_wallet_balance(wallet_address):
 	print(f"Запрос баланса для кошелька {wallet_address}")
 	headers = {
@@ -24,18 +29,25 @@ def get_wallet_balance(wallet_address):
 			"address": wallet_address
 		}
 	}
+
 	try:
 		response = requests.post(TON_API_URL, headers=headers, json=payload)
-		response.raise_for_status()
+		response.raise_for_status()  # Ensures that any status code other than 2xx raises an exception
 		data = response.json()
+
+		# Log the full response to see the structure
+		print("API Response:", data)
+
 		if "result" in data:
-			return data["result"]
+			balance = data["result"].get("balance", 0)  # Default to 0 if "balance" isn't present
+			print(f"Balance (nanotons): {balance}")
+			return balance / 1e9  # Convert nanotons to TON
 		else:
 			print(f"Ошибка в ответе API: {data}")
-			return "0"
+			return 0  # Return 0 if there's no "result" field
 	except requests.exceptions.RequestException as e:
 		print(f"Ошибка при запросе баланса: {e}")
-		return "Ошибка запроса"
+		return "Ошибка запроса"  # Return a string error message
 
 
 # Отправка токенов (TON)

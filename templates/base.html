@@ -6,7 +6,6 @@
     <title>TON MiniApp</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
 <header>
@@ -14,8 +13,7 @@
     <nav>
         <a href="/" class="nav-link">Home</a>
         <a href="/tasks" class="nav-link">Tasks</a>
-        <a href="/airdrop" class="nav-link">Airdrop</a>
-        <a href="/mint-token" class="nav-link">Mint NFT</a>
+
     </nav>
 </header>
 <main>
@@ -33,5 +31,8 @@
 <footer>
     <p>© 2024 TON MiniApp</p>
 </footer>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
 </body>
 </html>
